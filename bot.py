@@ -4,6 +4,8 @@ import twitchio
 import asyncio
 import time
 import threading
+import yaml
+
 
 client = twitchio.Client(token=os.environ['USER_TOKEN'])
 client.pubsub = pubsub.PubSubPool(client)
