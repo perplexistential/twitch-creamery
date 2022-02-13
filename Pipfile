@@ -7,6 +7,7 @@ name = "pypi"
 twitchio = "*"
 pyyaml = "*"
 pre-commit = "*"
+requests = "*"
 
 [dev-packages]
 

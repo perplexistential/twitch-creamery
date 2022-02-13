@@ -3,7 +3,7 @@ import asyncio
 import time
 import threading
 import yaml
-import base64, requests, sys
+import base64, sys
 import importlib
 
 from twitchio.ext import commands
@@ -55,11 +55,6 @@ class Bot(commands.Bot):
             cog_module = importlib.import_module(f"cogs.{cog}")
             cog_module.prepare(self)
 
-        thread = threading.Thread(target=self.run, args=())
-        thread.daemon = True
-        thread.start()
-        # self.run()
-
     async def event_ready(self):
         # Notify us when everything is ready!
         # We are logged in and ready to chat and use commands...
@@ -69,4 +64,7 @@ class Bot(commands.Bot):
         return user.refresh_access_token(self.access_token)
 
     def start(self):
-        pass
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True
+        thread.start()
+        # self.run()
