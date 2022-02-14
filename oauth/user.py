@@ -232,10 +232,10 @@ class UserAuthenticator:
  <html lang="en">
  <head>
      <meta charset="UTF-8">
-     <title>pyTwitchAPI OAuth</title>
+     <title>Twitch-Creamery OAuth</title>
  </head>
  <body>
-     <h1>Thanks for Authenticating with pyTwitchAPI!</h1>
+     <h1>Thanks for Authenticating!</h1>
  You may now close this page.
  </body>
  </html>"""
