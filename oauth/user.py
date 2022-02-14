@@ -1,3 +1,9 @@
+#  Copyright (c) 2020. Lena "Teekeks" During <info@teawork.de>
+
+# Copied here and adapted for the purposes of adding authorization flow to the bots.
+# All of the following code is essentially the same or code was copied from files it imported for
+# brevity. See: https://github.com/Teekeks/pyTwitchAPI
+
 """
 User OAuth Authenticator and helper functions
 ---------------------------------------------
@@ -255,8 +261,6 @@ class UserAuthenticator:
 
     __can_close: bool = False
 
-    __token_cache: dict = {}
-
     def __init__(
         self,
         app_id: str,
@@ -353,16 +357,6 @@ class UserAuthenticator:
         :raises ~twitchAPI.types.TwitchAPIException: if authentication fails
         :rtype: None or (str, str)
         """
-        # Reuse the tokens for a given client_id
-        if self.__client_id in self.__token_cache:
-            if (
-                validate_token(self.__token_cache[self.__client_id]).get(
-                    "expires_in", 0
-                )
-                > 0
-            ):
-                return self.__token_cache[self.__client_id]
-
         self.__callback_func = callback_func
 
         if user_token is None:
@@ -392,7 +386,6 @@ class UserAuthenticator:
             self.stop()
             if data.get("access_token") is None:
                 raise Exception(f"Authentication failed:\n{str(data)}")
-            self.__token_cache[self.__client_id] = data
             return data["access_token"], data["refresh_token"]
         elif user_token is not None:
             self.__callback_func(self.__user_token)
