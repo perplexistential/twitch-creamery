@@ -64,4 +64,4 @@ def refresh_token(client_id, client_secret):
 
 
 def all_scopes():
-    return [s.value for s in user.AuthScope]
+    return user.AuthScope.all_scopes()

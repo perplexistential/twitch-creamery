@@ -29,6 +29,7 @@ class Bot(commands.Bot):
             port=kwargs.get("auth_port"),
             scopes=kwargs.get("scopes"),
         )
+        self.channels = kwargs.get("channels", [])
 
         # Initialise our Bot with our access token, prefix and a list of channels to join on boot...
         # prefix can be a callable, which returns a list of strings or a string...
@@ -38,7 +39,7 @@ class Bot(commands.Bot):
             token=access_token,
             client_secret=self.client_secret,  # will refresh tokens automatically???
             prefix=kwargs.get("prefix", os.environ.get("DEFAULT_PREFIX", "!")),
-            initial_channels=kwargs.get("channels", []),
+            initial_channels=self.channels,
             nick=name,
             loop=kwargs.get("loop"),
         )

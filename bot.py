@@ -4,7 +4,6 @@ import time
 import asyncio
 
 from bots.bot import Bot
-from bots.pubsub import PubSubListener
 
 PUBSUB_BOT_NAME = os.environ.get("PUBSUB_BOT_NAME", "pubsub")
 

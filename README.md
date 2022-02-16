@@ -65,6 +65,45 @@ bot_name:
 
 cogs are to be placed in the "cogs" directory to be found when parsing the above YAML.
 
+## pubsub how-to
+
+Pubsub is analogous to channel point redemptions, moderator actions, and bit events. At some point, whispers and subscriptions, too.
+
+These features have been implemented as a Cog to be integrated into a bot, like any other, except it requires a unique setup. You are probably now familiar with your API Client credentials being used to generate access and refresh tokens via the OAuth2 Authorization Code Flow, whereby the bot requests permission to act on behalf of your bot's Twitch account. Channel points, bits, and other pubsub events require another user token; that of the owner of the channel to which your bot is "subscribing" to the "publications" (i.e. pubsub).
+
+To make a bot that captures pubsub for a channel one needs to do the following:
+
+* A channel's owner must generate a user access token and provide it. not a bot account; the actual channel where the streams will happen. It might authorize the following permissions:
+
+```
+bits:read
+channel:read:redemptions
+moderator:read:automod_settings
+moderator:manage:automod_settings
+moderator:manage:banned_users
+moderator:read:blocked_terms
+moderator:manage:blocked_terms
+moderator:read:chat_settings
+moderator:manage:chat_settings
+```
+
+* Add a bot configuration to bots.yaml like this
+
+```yaml
+pubsub:
+   cogs:
+   -   pubsub
+   channels:
+   -   thatsamorais
+   scopes:
+   -   all_scopes
+```
+
+* Add the channel name to the `channels` list in the bot's yaml config
+* Add an environment variable composed of the channel's name in all caps followed by `_PUBSUB_TOKEN` containing this token, into `.env`, i.e. `CHANNEL_NAME_PUBSUB_TOKEN=user's token`
+
+If you see BADAUTH error codes being emitted, ensure that the token has
+
 ## documentation
 
 github: https://github.com/perplexistential/twitch-creamery

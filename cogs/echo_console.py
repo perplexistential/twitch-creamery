@@ -2,7 +2,7 @@ from twitchio.ext import commands
 
 
 class Cog(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot):
         self.bot = bot
 
     @commands.command()
