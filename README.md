@@ -4,11 +4,8 @@ a twitch-bot for the homies and I to entertain and amuse
 ## setup
 
 1. Make an account on Twitch for your bot. Its more common than using your actual account.
-1. If you prefer, request an oauth code from: https://twitchtokengenerator.com/ using your bot account. You'll need to login and give the app permissions to generate it for you. This app will give you the access token and the client ID of your bot's account. You can also choose your own way of getting these credentials if you wish!
-1. Register an app with Twitch dev under your bot account, https://dev.twitch.tv/console/apps/create , and request a client-id so you can interface with Twitch's API. This Client ID is different from the one collected in the previous step; it is specifically for the API only. 
-
-TODO: Figure out if we need a different Twitch API client ID
-TODO: Build the token generation into this app so that giving permissions to a 3rd party application is not necessary.
+1. Register an app with Twitch dev under your bot account, https://dev.twitch.tv/console/apps/create , and request a client-id so you can interface with Twitch's API
+1. Also, generate the client-secret of the application too.
 
 ## code
 
