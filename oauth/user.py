@@ -267,8 +267,8 @@ class UserAuthenticator:
         app_secret: str,
         scopes: List[str],
         force_verify: bool = False,
-        url: str = "http://localhost:17563",
-        port: str = "17563",
+        url: str = "http://localhost:18951",
+        port: str = "18951",
     ):
         self.__client_id = app_id
         self.__client_secret = app_secret
@@ -431,7 +431,3 @@ class AuthScope(Enum):
     CHANNEL_MANAGE_PREDICTIONS = "channel:manage:predictions"
     MODERATOR_MANAGE_AUTOMOD = "moderator:manage:automod"
     # CHANNEL_MANAGE_SCHEDULE = 'channel:manage:channel'
-
-
-def all_scopes():
-    return [s.value for s in AuthScope]

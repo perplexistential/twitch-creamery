@@ -1,20 +1,14 @@
-creamy_bot:
+example_bot:
    prefix: !
    cogs:
    -   echo_console
    channels:
-   -   thatsamorais
+   -   AnonymousUser
    scopes:
    -   all_scopes
 
-race_the_nags:
-   prefix: $
-   cogs:
-   -   horse_service
-   channels:
-   -   thatsamorais
-   scopes:
-   -   chat:read
-
 pubsub:
-
+   cogs:
+   -   pubsub
+   channels:
+   -   AnonymousUser

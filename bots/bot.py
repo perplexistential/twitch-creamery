@@ -9,7 +9,8 @@ import importlib
 from twitchio.ext import commands
 import twitchio
 
-from oauth import user
+from tokengen.utils import generate_token, refresh_token
+from bots.bot_init import init
 
 DEFAULT_PREFIX = "!"
 
@@ -20,35 +21,26 @@ class Bot(commands.Bot):
         self.cogs_config = kwargs.pop("cogs", {})
         self._app_token = None
 
-        target_scope = []
-        for s in kwargs.get("scopes", []):
-            if s == "all_scopes":
-                target_scope.extend(user.all_scopes())
-            else:
-                target_scope.append(s)
-        if not target_scope:
-            target_scope = user.all_scopes()
-
         self.client_id = os.environ.get(f"{name.upper()}_CLIENT_ID", "")
         self.client_secret = os.environ.get(f"{name.upper()}_CLIENT_SECRET", "")
-        self.auth = user.UserAuthenticator(
+        access_token = generate_token(
             self.client_id,
             self.client_secret,
-            target_scope,
-            force_verify=False,
-            port=kwargs.get("auth_port", None),
+            port=kwargs.get("auth_port"),
+            scopes=kwargs.get("scopes"),
         )
 
-        # this will open your default browser and prompt you with the twitch verification website
-        self.access_token, self.refresh_token = self.auth.authenticate()
         # Initialise our Bot with our access token, prefix and a list of channels to join on boot...
         # prefix can be a callable, which returns a list of strings or a string...
         # initial_channels can also be a callable which returns a list of strings...
-        super().__init__(
-            token=self.access_token,
+        init(
+            self,
+            token=access_token,
+            client_secret=self.client_secret,  # will refresh tokens automatically???
             prefix=kwargs.get("prefix", os.environ.get("DEFAULT_PREFIX", "!")),
             initial_channels=kwargs.get("channels", []),
             nick=name,
+            loop=kwargs.get("loop"),
         )
 
         for cog in self.cogs_config:
@@ -61,10 +53,4 @@ class Bot(commands.Bot):
         print(f"Logged in as | {self.nick}")
 
     async def event_token_expired(self):
-        return user.refresh_access_token(self.access_token)
-
-    def start(self):
-        thread = threading.Thread(target=self.run, args=())
-        thread.daemon = True
-        thread.start()
-        # self.run()
+        return refresh_token(self.client_id, self.client_secret)

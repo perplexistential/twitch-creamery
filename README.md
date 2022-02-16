@@ -10,55 +10,70 @@ a twitch-bot for the homies and I to entertain and amuse
 TODO: Figure out if we need a different Twitch API client ID
 TODO: Build the token generation into this app so that giving permissions to a 3rd party application is not necessary.
 
-## env file
-
-Create a file next to bot.py called ".env" and populate it with these contents
-
-```
-API_CLIENT_ID=<your TwitchAPI app's client ID from Twitch>
-USER_TOKEN=oauth:<your token>
-USER_CLIENT_ID=<your bot's client ID>
-BOT_NICK=<your bot's nickname>
-BOT_PREFIX=!
-CHANNEL=<your channel name>
-```
-
-Optionally, you can add support for listening to moderator activities by supplying the User IDs of the moderators whose actions in your channel you want to handle. If left empty or omitted then this pubsub action will not be registered.
-
-```
-MODERATORS=<moderator1_userid>,<moderator2_userid>,...
-```
-
-
-
-Note for coders: this file is in the .gitignore so that nobody accidentally pushes their secrets to the remote repository.
-
 ## code
 
-1. Python 3.x(3.6+): https://www.python.org/downloads/ 
+1. Python 3.x(3.6+): https://www.python.org/downloads/
 1. Open a shell on your system: bash, iterm, cmd.exe
 1. run `pip install pipenv`
 1. change directory to where this project resides: cd ~/your/project/path, or even cd C:\your\project\path
 1. now execute `pipenv sync` to sync your local env with the dependencies of this project
 
-## run 
+## env file
+
+Create a file next to bot.py called ".env" and populate it with your credentials.
+
+See .env.example for reference on what is required and available.
+
+
+For bot `CLIENT_ID` and `CLIENT_SECRET` the naming convention is:
+
+```shell
+YOUR_BOT_NAME_CLIENT_ID= ...
+YOUR_BOT_NAME_CLIENT_SECRET= ...
+```
+
+## run
 
 ```shell
  > cd path\to\code\directory
  path\to\code\directory\> pipenv run python bot.py
 ```
 
+### default values
+
+The code contains several default values when retrieving environment variables.
+
+Note for coders: this file is in the .gitignore so that nobody accidentally pushes their secrets to the remote repository.
+
+## yaml
+
+Bots are configured with Cogs and other details through a YAML file, default being `bots.yaml`.
+
+An example has been generated for you, called `bots.example.yaml`
+
+```
+bot_name:
+	prefix: !      # how the bot recognizes commands
+	channels:      # list of twitch channels the bot will join
+	-   channel_1
+	cogs:          # cogs is a list of the cogs the bot will use
+	-   cog_name_1 # the name of the cog matching their filenames in the cogs/ directory
+	scopes:
+	-   all_scopes # if you want to request all possible scopes (default if not specified)
+	-   chat:read  # an example of a single scope one could list. See AuthScopes in oauth/user.py
+```
+
+cogs are to be placed in the "cogs" directory to be found when parsing the above YAML.
+
 ## documentation
+
+github: https://github.com/perplexistential/twitch-creamery
+
+TwitchIO:
+1. twitchio: https://twitchio.readthedocs.io/en/latest/index.html
+2. github: https://github.com/TwitchIO/TwitchIO
 
 Pub Sub:
 1. twitch pubsub API docs: https://dev.twitch.tv/docs/pubsub#topics
 1. twitchio: https://twitchio.readthedocs.io/en/latest/exts/pubsub.html
-
-## troll bot
-
-if you would like to have a bot that replaces a word in your chatters' messages from time to time, like buttsbot, then add the following to your .env file
-
-```
-
-```
 
