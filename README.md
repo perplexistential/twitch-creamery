@@ -109,7 +109,9 @@ TwitchIO:
 1. twitchio: https://twitchio.readthedocs.io/en/latest/index.html
 2. github: https://github.com/TwitchIO/TwitchIO
 
-Pub Sub:
+PubSub:
 1. twitch pubsub API docs: https://dev.twitch.tv/docs/pubsub#topics
 1. twitchio: https://twitchio.readthedocs.io/en/latest/exts/pubsub.html
 
+Routines:
+1. twitchio: https://twitchio.readthedocs.io/en/latest/exts/routines.html
