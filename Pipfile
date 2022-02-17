@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-twitchio = "*"
+twitchio = {extras = ["sounds"], version = "*"}
 pyyaml = "*"
 pre-commit = "*"
 requests = "*"

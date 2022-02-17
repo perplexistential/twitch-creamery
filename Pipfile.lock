@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b2b3e7ff0b3f7c73749946eb989873c2d575e37566934640c31793c1da584e70"
+            "sha256": "2e31be838ab63db934450dc3ba880eb70b131d71f355ff6a1eb2db2487c38cca"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -115,11 +115,11 @@
         },
         "filelock": {
             "hashes": [
-                "sha256:137b661e657f7850eec9def2a001efadba3414be523b87cd3f9a037372d80a15",
-                "sha256:a7141afb4feca60925cfc090b411fb9faaf542d06d58ece4f93d940265e6b995"
+                "sha256:7b23620a293cf3e19924e469cb96672dc72b36c26e8f80f85668310117fcbe4e",
+                "sha256:d1eccb164ed020bc84edd9e45bf6cdb177f64749f6b8fe066648832d2e98726d"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==3.5.0"
+            "version": "==3.5.1"
         },
         "identify": {
             "hashes": [
@@ -297,6 +297,9 @@
             "version": "==0.10.2"
         },
         "twitchio": {
+            "extras": [
+                "sounds"
+            ],
             "hashes": [
                 "sha256:90063d8377ea009695f11ae872dbde2a1a01d119fc8fe924ba6d801e9d9432b6",
                 "sha256:c4860d4b4d8a61fa1ff8c293c9d8f3483c55aad2232f47b79f28726661eea4ff"
