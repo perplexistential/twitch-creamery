@@ -1,3 +1,5 @@
+# Copyright Alex Morais (thatsamorais@gmail.com) for perplexistential
+
 from twitchio.ext import commands
 
 
@@ -19,6 +21,6 @@ class Cog(commands.Cog):
         print("horse_service cog is ready!")
 
 
-def prepare(bot: commands.Bot):
-    # Load our cog with this module...
-    bot.add_cog(Cog(bot))
+def prepare(bot: commands.Bot, data={}):
+    """Load our cog with this module."""
+    bot.add_cog(Cog(bot, data=data))

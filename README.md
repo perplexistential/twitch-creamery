@@ -99,7 +99,81 @@ pubsub:
 * Add the channel name to the `channels` list in the bot's yaml config
 * Add an environment variable composed of the channel's name in all caps followed by `_PUBSUB_TOKEN` containing this token, into `.env`, i.e. `CHANNEL_NAME_PUBSUB_TOKEN=user's token`
 
-If you see BADAUTH error codes being emitted, ensure that the token has
+If you see BADAUTH error codes being emitted, ensure that the token has the correct permissions
+
+## EventSub
+
+Event Subscribing, or EventSub, is a webhook pattern where the bot informs twitch of what signals the bot would like to be sent a request to be notified when they happen.
+
+ |Your Bot| --- subscribe to channel subscriptions ->  |Twitch Webhook Registry|
+
+The subscription request sent to Twitch contains a callback url which MUST be served over TLS, i.e. https.
+
+```
+https://subdomain.your-domain.com/callback
+```
+
+Therefore messages are sent as follows
+
+ |Twitch Webhook Sender| --- POST /callback {event data} -> |DNS| -> |Your Bot HTTP endpoint|
+
+For Twitch to reach your bot server host, which could be running on your local machine or in cloud provider, the machine's IP must be public-facing. While you can easily achieve a public facing HTTP endpoint over TLS by hosting a bot in them, Cloud solutions can entail tradeoffs. Maybe you do not want to pay for the usage. There is another way...
+
+### Dynamic DNS with Namecheap
+
+You can use whatever site you want to rent your domain, but because Namecheap has amazing documentation for how to setup Dynamic DNS entries, this may be insightful to you. If they don't then consider a better provider; its easy to move a domain.
+
+This document describes how to setup a host for dynamic DNS in Namecheap's SaaS UI. Of the ~3 options they present, I prefer the subdomain option where "Host" is the subdomain, i.e. `subdomain.your-domain.com`. One can be made exclusively for Twitch.
+
+1. [How do I set up a Host for Dynamic DNS?](https://www.namecheap.com/support/knowledgebase/article.aspx/43/11/how-do-i-set-up-a-host-for-dynamic-dns/) Easy, right? Now to test...
+1. [How to dynamically update the host's IP with an HTTP request?](https://www.namecheap.com/support/knowledgebase/article.aspx/29/11/how-to-dynamically-update-the-hosts-ip-with-an-http-request/) One can test this by grabbing the Dynamic DNS password and calling the "update" url with the host, domain, password, and ip parameters. Plugging it into a browser is good enough. Until you see something like the following in response, then keep getting the parameters right:
+
+```
+https://dynamicdns.park-your-domain.com/update?host=subdomain&domain=your-domain.com&password=pword&ip=127.0.0.2
+```
+```
+<?xml version="1.0" encoding="utf-16"?>
+<interface-response>
+  <Command>SETDNSHOST</Command>
+  <Language>eng</Language>
+  <IP>127.0.0.2</IP>
+  <ErrCount>0</ErrCount>
+  <errors />
+  <ResponseCount>0</ResponseCount>
+  <responses />
+  <Done>true</Done>
+  <debug><![CDATA[]]></debug>
+</interface-response>
+```
+Error free, and easy. Now we know that the IP can be dynamically assigned. 
+
+Next, is to automate this with `ddclient`, the Dynamic DNS client. Download it here: 
+
+Linux: https://ddclient.net/#installation
+Windows: Beware what you might download from the internet claiming to be a ddclient for Windows. You might have noticed that Namecheap gave you the option when you enabled Dynamic DNS to download a zip file with a client in it. That is a Windows executable, FYI, and it may be useful to you. I trust Namecheap more than a random app from a google search.
+
+[How do I configure DDClient?](https://www.namecheap.com/support/knowledgebase/article.aspx/583/11/how-do-i-configure-ddclient/)
+
+The supplied configuration can go directly into `/etc/ddclient.conf` but modified with the values of your setup.
+
+```
+use=web, web=dynamicdns.park-your-domain.com/getip
+protocol=namecheap
+server=dynamicdns.park-your-domain.com
+login=yourdomain.com
+password=y0urpw0rd
+subdomain
+```
+
+Then just run the ddclient in daemon mode:
+
+```
+/usr/sbin/ddclient -daemon 300 -syslog
+```
+
+You can set this up to run automatically by adding it to your startup.
+
+You will notice that what was previously set in testing to `127.0.0.2` for fun, is now set to your current IP. If not, check that your config params match your URL that previously worked.
 
 ## documentation
 

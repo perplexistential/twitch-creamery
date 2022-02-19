@@ -1,3 +1,5 @@
+# Copyright Alex Morais (thatsamorais@gmail.com) for perplexistential
+
 import os
 from bots.bot import Bot
 from twitchio.ext import commands, pubsub
@@ -84,6 +86,6 @@ class Cog(commands.Cog):
         self.bot.loop.create_task(self.bot.pubsub.subscribe_topics(topics))
 
 
-def prepare(bot: commands.Bot):
-    # Load our cog with this module...
-    bot.add_cog(Cog(bot))
+def prepare(bot: commands.Bot, data={}):
+    """Load our cog with this module."""
+    bot.add_cog(Cog(bot, data=data))

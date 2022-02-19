@@ -1,3 +1,5 @@
+# Copyright Alex Morais (thatsamorais@gmail.com) for perplexistential
+
 import os
 import yaml
 import time
