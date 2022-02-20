@@ -117,20 +117,25 @@ Therefore messages are sent as follows
 
  |Twitch Webhook Sender| --- POST /callback {event data} -> |DNS| -> |Your Bot HTTP endpoint|
 
-For Twitch to reach your bot server host, which could be running on your local machine or in cloud provider, the machine's IP must be public-facing. While you can easily achieve a public facing HTTP endpoint over TLS by hosting a bot in them, Cloud solutions can entail tradeoffs. Maybe you do not want to pay for the usage. There is another way...
+For Twitch to reach your bot server host, which could be running on your local machine or in cloud provider, the machine's IP must be public-facing. 
+
+While you can easily achieve a public facing HTTP endpoint over TLS by hosting a bot in a cloud resource, these solutions can entail tradeoffs since they are on a remote machine. Maybe you do not want to pay for the usage, either. There is another way that requires some setup if one is willing...
 
 ### Dynamic DNS with Namecheap
 
-You can use whatever site you want to rent your domain, but because Namecheap has amazing documentation for how to setup Dynamic DNS entries, this may be insightful to you. If they don't then consider a better provider; its easy to move a domain.
+You can use whatever site you want to rent your domain, but because Namecheap has amazing documentation for how to setup Dynamic DNS entries, I have gone that route.
 
-This document describes how to setup a host for dynamic DNS in Namecheap's SaaS UI. Of the ~3 options they present, I prefer the subdomain option where "Host" is the subdomain, i.e. `subdomain.your-domain.com`. One can be made exclusively for Twitch.
+The document linked in the first step, below, describes how to setup a host for dynamic DNS in Namecheap's SaaS UI. Of the ~3 options they present, I prefer the subdomain option, i.e. `subdomain.your-domain.com`. One can be made exclusively for Twitch to keep things tidy.
 
 1. [How do I set up a Host for Dynamic DNS?](https://www.namecheap.com/support/knowledgebase/article.aspx/43/11/how-do-i-set-up-a-host-for-dynamic-dns/) Easy, right? Now to test...
-1. [How to dynamically update the host's IP with an HTTP request?](https://www.namecheap.com/support/knowledgebase/article.aspx/29/11/how-to-dynamically-update-the-hosts-ip-with-an-http-request/) One can test this by grabbing the Dynamic DNS password and calling the "update" url with the host, domain, password, and ip parameters. Plugging it into a browser is good enough. Until you see something like the following in response, then keep getting the parameters right:
+1. [How to dynamically update the host's IP with an HTTP request?](https://www.namecheap.com/support/knowledgebase/article.aspx/29/11/how-to-dynamically-update-the-hosts-ip-with-an-http-request/) One can test this by grabbing the Dynamic DNS password and calling the "update" url with the host, domain, password, and ip parameters. Plugging it into a browser is good enough. Until you see something like the following in response, then check the parameters:
 
+URL:
 ```
 https://dynamicdns.park-your-domain.com/update?host=subdomain&domain=your-domain.com&password=pword&ip=127.0.0.2
 ```
+
+Response:
 ```
 <?xml version="1.0" encoding="utf-16"?>
 <interface-response>
@@ -145,17 +150,25 @@ https://dynamicdns.park-your-domain.com/update?host=subdomain&domain=your-domain
   <debug><![CDATA[]]></debug>
 </interface-response>
 ```
-Error free, and easy. Now we know that the IP can be dynamically assigned. 
+Error free, and easy. Based on the Namecheap UI displaying the configuration, we now know that the IP can be dynamically assigned.
 
-Next, is to automate this with `ddclient`, the Dynamic DNS client. Download it here: 
+Next, is to automate this with `ddclient`, the Dynamic DNS client. Download it here:
 
 Linux: https://ddclient.net/#installation
-Windows: Beware what you might download from the internet claiming to be a ddclient for Windows. You might have noticed that Namecheap gave you the option when you enabled Dynamic DNS to download a zip file with a client in it. That is a Windows executable, FYI, and it may be useful to you. I trust Namecheap more than a random app from a google search.
+
+Windows:
+
+Beware what you might download from the internet claiming to be a ddclient for Windows. You might have noticed that Namecheap gave you the option when you enabled Dynamic DNS to download a zip file with a ddclient exe. If you are using another provider then consult with them about what they recommend. I trust Namecheap more than a random app from an internet search. 
+
+There is also Dynu.com: https://www.dynu.com/en-US/Resources/Downloads . Good luck going this route, and please send a PR if you try this containing your documentation. 
+
+From here, your path may differ if not using ddclient on Linux, but the fundamentals are the same.
 
 [How do I configure DDClient?](https://www.namecheap.com/support/knowledgebase/article.aspx/583/11/how-do-i-configure-ddclient/)
 
 The supplied configuration can go directly into `/etc/ddclient.conf` but modified with the values of your setup.
 
+Example `ddclient.conf`:
 ```
 use=web, web=dynamicdns.park-your-domain.com/getip
 protocol=namecheap
@@ -171,9 +184,79 @@ Then just run the ddclient in daemon mode:
 /usr/sbin/ddclient -daemon 300 -syslog
 ```
 
-You can set this up to run automatically by adding it to your startup.
+You can set this up to run automatically on your machine by adding it to your startup. Otherwise, do not forget to have an updated IP address in your Dynamic DNS record where twitch can reach your service.
 
-You will notice that what was previously set in testing to `127.0.0.2` for fun, is now set to your current IP. If not, check that your config params match your URL that previously worked.
+Having run the ddclient daemon, or whatever client you used, you will notice that what was previously set to `127.0.0.2` by our test, is now set to your current IP. If not, check that your config params match your URL that previously worked.
+
+What we need next is TLS. If I have not lost you, yet, then congratulations because we're almost there. Nobody said this is simple, but you, unlike those who "want" event subscriptions in their bot, have decided to have event subscriptions in your bot. Now, let's setup nginx and get a certificate installed without crying.
+
+## Setting up nginx with dignity
+
+Firstly, in general, a better starting point for this discussion is: https://certbot.eff.org/
+
+We need our service to support TLS, and this can be achieved with a reverse proxy.
+
+Also worth pointing out why we must do this; Twitchio does not support TLS. This is reasonable because it allows us to choose the solution we want. 
+
+The solution being chosen for this project is `nginx`: https://nginx.org/en/ . Yet, you may use whatever proxy you want.
+
+Linux:
+
+```
+sudo apt install nginx
+```
+
+The nginx beginner's guide if you please: https://nginx.org/en/docs/beginners_guide.html
+
+The nginx.conf may be in /usr/local/nginx, /etc/nginx/, or /usr/local/etc/nginx depending on your distribution.
+
+Windows:
+
+See this document for how to get it setup: [https://nginx.org/en/docs/windows.html]. Locate the nginx.conf file in the installation directory. Please correct me if wrong.
+
+Test that you see the nginx page when you visit `localhost` in a browser. With a reachable proxy, the certbot can be installed.
+
+Next, the server must be added to `nginx.conf`. 
+
+Below is a config for a domain with dynamic DNS that has a `/callback` endpoint. this goes within the `http` section.
+
+```
+http {
+	...
+	server {
+	listen 80;
+	server_name subdomain.yourdomain.com;
+		location /callback {
+			proxy_pass http://127.0.0.1:8080;
+		}
+	}
+	...
+}
+```
+
+If you would like, change the port number on proxy_pass. It might not be easy to tell if this is ultimately working, but nginx should be running without errors, and this location should not produce a 404, rather a 502 since the server is not responding.
+
+## Installing certificates with Namecheap
+
+Back to https://certbot.eff.org/, from https://certbot.eff.org/instructions, there are some options presented. In our case we want to select `nginx` under "Software" and your OS under "System". Following the instructions presented here is helpful, and it also contains some helpful context around what is being done. Drink that in, and you'll find yourself at the step where we install certbot into nginx. For Linux it looks like: 
+
+```
+sudo certbot --nginx
+```
+
+### This went horribly wrong
+
+> Some challenges have failed.
+
+
+
+## Cert installation
+
+One must now install the certificate as well. Upon visiting their [comprehensive list of providers](https://certbot.eff.org/hosting_providers) and their support for automatic certificate generation, it informed me of a Namecheap tutorial. So, first ensure that your domain provider is not among those who can provide this for you. You may even find a link to the documentation for your provider that might be helpful.
+
+Now that I have generated the certificate, it needs to be installed, and I am following some instructions linked, here: https://www.namecheap.com/support/knowledgebase/article.aspx/9418/33/installing-an-ssl-certificate-on-your-server-using-cpanel/
+
+...
 
 ## documentation
 
@@ -188,4 +271,4 @@ PubSub:
 1. twitchio: https://twitchio.readthedocs.io/en/latest/exts/pubsub.html
 
 Routines:
-1. twitchio: https://twitchio.readthedocs.io/en/latest/exts/routines.html
+	1. twitchio: https://twitchio.readthedocs.io/en/latest/exts/routines.html
