@@ -1,59 +1,75 @@
 # Copyright Alex Morais (thatsamorais@gmail.com) for perplexistential
 
+"""The PubSub cog example."""
+
 import os
-from bots.bot import Bot
 from twitchio.ext import commands, pubsub
-from tokengen.utils import generate_token
 
 
 class Cog(commands.Cog):
-    def __init__(self, bot):
+    """Cog."""
+
+    def __init__(self, bot, data={}):
+        """init."""
         self.bot = bot
         self.bot.pubsub = pubsub.PubSubPool(self.bot)
 
     @commands.Cog.event("event_ready")
     async def is_ready(self):
+        """is_ready."""
         print("pubsub cog is ready!")
         bot = self.bot
 
         @bot.event()
         async def event_pubsub_bits(event: pubsub.PubSubBitsMessage):
             print(
-                f'{event.user.name} donated {event.bits_used} bits - "{event.message}" and received {event.badge_entitlement}'
+                f"{event.user.name} donated {event.bits_used} bits - "
+                f'"{event.message}" and received {event.badge_entitlement}'
             )
 
         @bot.event()
         async def event_pubsub_bits_badge(event: pubsub.PubSubBitsBadgeMessage):
             print(
-                f"{event.user.name} received badge level - {event.badge_tier} in {event.channel.name}"
+                f"{event.user.name} received badge level - "
+                f"{event.badge_tier} in {event.channel.name}"
             )
 
         @bot.event()
         async def event_pubsub_channel_points(event: pubsub.PubSubChannelPointsMessage):
             print(
-                f"{event.user.name} redeemed {event.reward.title} args({event.input}) in {event.channel_id} using channel points (id:{event.id})"
+                f"{event.user.name} redeemed {event.reward.title}"
+                f"args({event.input}) "
+                f"in {event.channel_id} using channel points"
+                f"(id:{event.id})"
             )
 
         @bot.event()
         async def event_pubsub_moderation_user_action(event):
             if type(event) == pubsub.PubSubModerationActionBanRequest:
                 print(
-                    f"{event.created_by.name} targeted {event.target.name} with {event.action}({event.args})"
+                    f"{event.created_by.name} targeted {event.target.name} "
+                    f"with {event.action}({event.args})"
                 )
             elif type(event) == pubsub.PubSubModerationActionChannelTerms:
                 print(
-                    f"{event.requester.name} requested channel terms update of type {event.type} to {event.id}:{event.text} in {event.channel_id}"
+                    f"{event.requester.name} requested channel terms update of"
+                    f" type {event.type} to {event.id}:{event.text} "
+                    f"in {event.channel_id}"
                 )
             elif type(event) == pubsub.PubSubModerationActionModeratorAdd:
                 print(
-                    f"{event.created_by.name} targeted {event.target.name} with {event.moderation_action} in {event.channel_id}"
+                    f"{event.created_by.name} targeted {event.target.name} "
+                    f"with {event.moderation_action} in {event.channel_id}"
                 )
             elif type(event) == pubsub.PubSubModerationAction:
                 print(
-                    f"{event.created_by.name} targeted {event.target.name} with {event.action}({event.args}): message({event.message_id}), automod({event.from_automod})"
+                    f"{event.created_by.name} targeted {event.target.name} "
+                    f"with {event.action}({event.args}): "
+                    f"message({event.message_id}), "
+                    f"automod({event.from_automod})"
                 )
 
-        # The following two events are not yet supported in twitchio, but are mentioned in the docs
+        # The following two events are mentioned in docs but not supported
         @bot.event()
         async def event_pubsub_channel_subscriptions(event):
             print("channel subscription: {event}")

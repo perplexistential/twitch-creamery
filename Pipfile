@@ -8,6 +8,7 @@ twitchio = {extras = ["sounds"], version = "*"}
 pyyaml = "*"
 pre-commit = "*"
 requests = "*"
+datetime = "*"
 
 [dev-packages]
 
