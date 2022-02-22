@@ -21,7 +21,6 @@ Create a file next to bot.py called ".env" and populate it with your credentials
 
 See .env.example for reference on what is required and available.
 
-
 For bot `CLIENT_ID` and `CLIENT_SECRET` the naming convention is:
 
 ```shell
@@ -70,7 +69,7 @@ These features have been implemented as a Cog to be integrated into a bot, like 
 
 To make a bot that captures pubsub for a channel one needs to do the following:
 
-* A channel's owner must generate a user access token and provide it. not a bot account; the actual channel where the streams will happen. It might authorize the following permissions:
+* A channel's owner must generate a user access token and provide it. not a bot account; the actual channel where the streams will happen. It might authorize the following permissions, but not all are required.
 
 ```
 bits:read
@@ -108,6 +107,8 @@ Event Subscribing, or EventSub, is a webhook pattern where the bot informs twitc
  |Your Bot| --- subscribe to channel subscriptions ->  |Twitch Webhook Registry|
 
 The subscription request sent to Twitch contains a callback url which MUST be served over TLS, i.e. https.
+
+Note that the EventSub bot MUST be authorized with the target channel's login, not your bot account login. It has to do with the required authorizations to subscribe to these webhooks.
 
 ```
 https://subdomain.your-domain.com/callback
@@ -188,11 +189,9 @@ You can set this up to run automatically on your machine by adding it to your st
 
 Having run the ddclient daemon, or whatever client you used, you will notice that what was previously set to `127.0.0.2` by our test, is now set to your current IP. If not, check that your config params match your URL that previously worked.
 
-What we need next is TLS. If I have not lost you, yet, then congratulations because we're almost there. Nobody said this is simple, but you, unlike those who "want" event subscriptions in their bot, have decided to have event subscriptions in your bot. Now, let's setup nginx and get a certificate installed without crying.
+What we need next is TLS. If I have not lost you, yet, then congratulations because we're almost there. Nobody said this is simple, but you, unlike those who "want" event subscriptions in their bot, have decided to have event subscriptions in your bot. Now, let's setup nginx and get a certificate installed.
 
-## Setting up nginx with dignity
-
-Firstly, in general, a better starting point for this discussion is: https://certbot.eff.org/
+### Setting up nginx
 
 We need our service to support TLS, and this can be achieved with a reverse proxy.
 
@@ -234,11 +233,19 @@ http {
 }
 ```
 
+After modifying the configuration you must restart nginx
+
+```
+sudo nginx -s reload
+```
+
 If you would like, change the port number on proxy_pass. It might not be easy to tell if this is ultimately working, but nginx should be running without errors, and this location should not produce a 404, rather a 502 since the server is not responding.
 
-## Installing certificates with Namecheap
+### Installing certificates with Namecheap
 
-Back to https://certbot.eff.org/, from https://certbot.eff.org/instructions, there are some options presented. In our case we want to select `nginx` under "Software" and your OS under "System". Following the instructions presented here is helpful, and it also contains some helpful context around what is being done. Drink that in, and you'll find yourself at the step where we install certbot into nginx. For Linux it looks like: 
+A good starting point for this discussion is: https://certbot.eff.org/ .
+
+From https://certbot.eff.org/instructions, there are some options presented. In our case we want to select `nginx` under "Software" and your OS under "System". Following the instructions presented here is helpful, and it also contains some helpful context around what is being done. Drink that in, and you'll find yourself at the step where we install certbot into nginx. For Linux it looks like: 
 
 ```
 sudo certbot --nginx
@@ -246,15 +253,15 @@ sudo certbot --nginx
 
 ### This went horribly wrong
 
-> Some challenges have failed.
+There are things that can be determined to be 
 
-
-
-## Cert installation
+### Cert installation
 
 One must now install the certificate as well. Upon visiting their [comprehensive list of providers](https://certbot.eff.org/hosting_providers) and their support for automatic certificate generation, it informed me of a Namecheap tutorial. So, first ensure that your domain provider is not among those who can provide this for you. You may even find a link to the documentation for your provider that might be helpful.
 
 Now that I have generated the certificate, it needs to be installed, and I am following some instructions linked, here: https://www.namecheap.com/support/knowledgebase/article.aspx/9418/33/installing-an-ssl-certificate-on-your-server-using-cpanel/
+
+At this point all the pieces should be in place. Please do post issues of your experiences with this.
 
 ...
 

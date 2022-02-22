@@ -32,12 +32,12 @@ class Cog(commands.Cog):
     @commands.Cog.event("event_ready")
     async def is_ready(self):
         """Run when ready."""
-        print("pubsub cog is ready!")
+        print("eventsub cog is ready!")
         bot = self.bot
-        for channel in self.channels:
+        for channel in bot.channels:
             for event in self.data.get("events", []):
-                for user in self.data.get("user_updated_users", []):
-                    await self.eventsub_client.subscribe_user_updated(user)
+                # for user in self.data.get("user_updated_users", []):
+                #    await self.eventsub_client.subscribe_user_updated(user)
                 if event == "channel_raid":
                     await self.eventsub_client.subscribe_channel_raid(channel)
                 elif event == "channel_ban":
@@ -92,6 +92,9 @@ class Cog(commands.Cog):
                     await self.eventsub_client.subscribe_channel_points_redeem_updated(
                         channel
                     )
+        port = self.data.get("port", "15543")
+        print(f"eventsub listening on port {port}")
+        self.bot.loop.create_task(self.eventsub_client.listen(port=port))
 
         @bot.event()
         async def eventsub_notification_user_update(payload: eventsub.UserUpdateData):

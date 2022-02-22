@@ -25,7 +25,7 @@ class Cog(commands.Cog):
     @routines.routine(minutes=10)
     async def hello(arg: str):
         """hello."""
-        print("Hello World!")
+        print("This is routines_bot!")
         raise RuntimeWarning("I enjoy attention")
 
     # This function will run prior to !hello

@@ -1,5 +1,22 @@
-example_bot:
-   prefix: !
+pubsub:
+   auth_port: 27562
+   cogs:
+   -   pubsub
+   channels:
+   -   AnonymousUser
+   scopes:
+   -   all_scopes
+   data:
+       topics:
+       -   channel_points
+       #-   bits
+       #-   bits_badge
+       #-   channel_subscriptions
+       #-   whispers
+
+creamy_bot:
+   prefix: "!"
+   auth_port: 27563
    cogs:
    -   echo_console
    channels:
@@ -7,8 +24,53 @@ example_bot:
    scopes:
    -   all_scopes
 
-pubsub:
+race_the_nags:
+   prefix: "$"
+   auth_port: 27564
    cogs:
-   -   pubsub
+   -   horse_service
    channels:
    -   AnonymousUser
+   scopes:
+   -   all_scopes
+
+routines:
+   auth_port: 27566
+   cogs:
+   -   routines
+   channels:
+   -   AnonymousUser
+   scopes:
+   -   all_scopes
+
+eventsub:
+   auth_port: 27565
+   cogs:
+   -   eventsub
+   data:
+      port: 19980
+      events:
+      #-   user_updated
+      -   channel_raid
+      -   channel_ban
+      -   channel_unban
+      -   channel_subscription
+      -   channel_cheers
+      -   channel_update
+      -   channel_follow
+      -   channel_moderators_add
+      -   channel_moderators_remove
+      -   channel_hypetrain_begin
+      -   channel_hypetrain_progress
+      -   channel_hypetrain_end
+      -   channel_stream_start
+      -   channel_stream_end
+      -   channel_points_reward_added
+      -   channel_points_reward_updated
+      -   channel_points_reward_removed
+      -   channel_points_redeemed
+      -   channel_points_redeem_updated
+   channels:
+   -   AnonymousUser
+   scopes:
+   -   all_scopes

@@ -1,3 +1,5 @@
+"""token helpers."""
+
 import threading
 import os
 
@@ -7,6 +9,7 @@ __token_cache = dict()
 
 
 def generate_token(client_id, client_secret, port=None, scopes=None):
+    """generate_token."""
     global __token_cache
     token_override = os.environ.get("AUTH_TOKEN", None)
     if token_override:
@@ -44,24 +47,27 @@ def generate_token(client_id, client_secret, port=None, scopes=None):
 
 
 def refresh_token(client_id, client_secret):
+    """refresh_token."""
     global __token_cache
     if not client_id or not client_secret:
         if os.environ.get("AUTH_TOKEN", None):
             print(
-                "Your manual auth token may have expired. Providing a client id/secret and acquiring a token from the OAuth2 Authorization flow with a user would enable automatic token refresh."
+                "Your manual auth token may have expired. "
+                "Providing a client id/secret and acquiring a token from the "
+                "OAuth2 Authorization flow with a user would enable automatic "
+                "token refresh."
             )
             return None
         else:
             raise Exception("the client and secret are invalid")
-    if __token_cache[client_id]["lock"].acquire(blocking=False):
         at, rt = user.refresh_access_token(
             __token_cache[client_id]["refresh_token"], client_id, client_secret
         )
         __token_cache[client_id] = {"access_token": at, "refresh_token": rt}
-        __token_cache[client_id]["lock"].release()
         return at
     return __token_cache[client_id]["access_token"]
 
 
 def all_scopes():
+    """all_scopes."""
     return user.AuthScope.all_scopes()

@@ -1,5 +1,7 @@
 # Copyright Alex Morais (thatsamorais@gmail.com) for perplexistential
 
+"""Bot application main."""
+
 import os
 import yaml
 import time

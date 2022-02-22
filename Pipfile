@@ -9,9 +9,9 @@ pyyaml = "*"
 pre-commit = "*"
 requests = "*"
 datetime = "*"
-certifi = "*"
+ipdb = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "*"
+python_version = "3.8"

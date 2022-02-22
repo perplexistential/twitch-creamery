@@ -12,6 +12,7 @@ class Cog(commands.Cog):
     def __init__(self, bot, data={}):
         """init."""
         self.bot = bot
+        self.data = data
         self.bot.pubsub = pubsub.PubSubPool(self.bot)
 
     @commands.Cog.event("event_ready")
@@ -78,27 +79,30 @@ class Cog(commands.Cog):
         async def event_pubsub_whispers(event):
             print("whispers: {event}")
 
-        topics = []
         for channel in self.bot.channels:
             token = os.environ.get(f"{channel.upper()}_PUBSUB_TOKEN", "")
             channel_details = await self.bot.fetch_channel(channel)
             channel_id = channel_details.user.id
-            topics.extend(
-                [
-                    pubsub.channel_points(token)[channel_id],
-                    pubsub.bits(token)[channel_id],
-                    pubsub.bits_badge(token)[channel_id],
-                    # This support is not yet ready in twitchio. maybe soon?
-                    # pubsub.channel_subscriptions(self.bot.access_token)[channel_id],
-                    # pubsub.whispers(self.bot.access_token)
-                ]
-            )
-            for mod_id in os.environ.get("MODERATORS", "").strip().split(","):
-                if mod_id:
+            topics = []
+            for topic in self.data.get("topics", []):
+                if topic == "channel_points":
+                    topics.append(pubsub.channel_points(token)[channel_id])
+                elif topic == "bits":
+                    topics.append(pubsub.bits(token)[channel_id])
+                elif topic == "bits_badge":
+                    topics.append(pubsub.bits_badge(token)[channel_id])
+                # This support is not yet ready in twitchio. maybe soon?
+                elif topic == "channel_subscriptions":
                     topics.append(
-                        pubsub.moderation_user_action(token)[channel_id][mod_id]
+                        pubsub.channel_subscriptions(self.bot.access_token)[channel_id]
                     )
-
+                elif topic == "whispers":
+                    topics.append(pubsub.whispers(self.bot.access_token))
+                for mod_id in os.environ.get("MODERATORS", "").strip().split(","):
+                    if mod_id:
+                        topics.append(
+                            pubsub.moderation_user_action(token)[channel_id][mod_id]
+                        )
         self.bot.loop.create_task(self.bot.pubsub.subscribe_topics(topics))
 
 
