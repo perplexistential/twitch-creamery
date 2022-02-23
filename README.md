@@ -1,6 +1,20 @@
 # twitch-creamery
 a twitch-bot for the homies and I to entertain and amuse
 
+## Twitch bot season is over for now
+
+I am working on other projects currently, but feel free to post issues or fork as desired.
+
+There is a lot done, but also, it was hastily put together over the course of a month, so be aware that it is not a work of beauty. EventSub is where I left off, and you can even ignore it if its too complicated. Some documentation below.
+
+Code of interest:
+
+* cogs/
+
+* bots/bot.py, if you need to go ham
+
+The rest is merely facilitating what is in cogs. 
+
 ## setup
 
 1. Make an account on Twitch for your bot. Its more common than using your actual account.
@@ -279,3 +293,15 @@ PubSub:
 
 Routines:
 	1. twitchio: https://twitchio.readthedocs.io/en/latest/exts/routines.html
+
+
+## Future
+
+ * Better EventSub instructions and more complete example of it running both locally and as a remote service.
+ 
+ * User token override option within the environment so that the bots can either use the UserAuthentication class that hits the browser, or they can manually supply a token.
+ 
+ * More bots.example.yaml files to show a more accurate layout of how best to use the bots, and more minimalist examples, too. The intention was not to make a 6 headed multi-bot, and pubsub has different token requirements than eventsub and chat bots. Therefore, one could be mislead that this was the intent.
+ 
+ * Sounds Ext of TwitchIO was just released as this project was hitting a hiatus, but a Cog should be written as boilerplate starter like the other cogs developed so far.
+ 
