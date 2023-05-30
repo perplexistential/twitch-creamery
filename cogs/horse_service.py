@@ -2,15 +2,17 @@
 
 """horse_service is a cog example."""
 
+from bots.bot import Bot
 from twitchio.ext import commands
+from .base import BaseCog
+import logging
 
+logger = logging.getLogger(__name__)
 
-class Cog(commands.Cog):
-    """Cog."""
+class Cog(BaseCog):
 
-    def __init__(self, bot, data={}):
-        """init."""
-        self.bot = bot
+    def __init__(self, bot: Bot, data={}):
+        super().__init__(bot, 'horse_service', **data)
 
     @commands.command()
     async def horse(self, ctx: commands.Context):
@@ -20,9 +22,4 @@ class Cog(commands.Cog):
     @commands.Cog.event("event_ready")
     async def is_ready(self):
         """is_ready."""
-        print("horse_service cog is ready!")
-
-
-def prepare(bot: commands.Bot, data={}):
-    """Load our cog with this module."""
-    bot.add_cog(Cog(bot, data=data))
+        logger.info("horse_service cog is ready!")

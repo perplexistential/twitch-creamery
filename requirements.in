@@ -1,0 +1,8 @@
+twitchio==2.1.5
+pyyaml
+pre-commit
+requests
+datetime
+python-dotenv
+cryptography
+httpx

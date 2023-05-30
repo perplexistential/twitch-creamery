@@ -3,8 +3,11 @@
 """An example of routines."""
 
 import datetime
+import logging
 from twitchio.ext import commands, routines
+from .base import Cog
 
+logger = logging.getLogger(__name__)
 
 # This is intended as an example of how one could implement routines in a Cog.
 # Let it serve as a repository of shared routines, important dates too.
@@ -12,33 +15,30 @@ from twitchio.ext import commands, routines
 # I do not recommend adding this cog directly, but making a copy and modifying
 # it, or borrowing from it whatever routines you want.
 
-
-class Cog(commands.Cog):
-    """Cog."""
+class Cog(BaseCog):
 
     def __init__(self, bot, data={}):
-        """init."""
-        self.bot = bot
+        super().__init__(bot, 'routines', **data)
         self.hello.start()
         self.happy_birthday.start()
 
     @routines.routine(minutes=10)
     async def hello(arg: str):
         """hello."""
-        print("This is routines_bot!")
+        logger.info("This is routines_bot!")
         raise RuntimeWarning("I enjoy attention")
 
     # This function will run prior to !hello
     @hello.before_routine
     async def hello_before(arg: str):
         """pre-hello."""
-        print("I am run before !hello")
+        logger.info("I am run before !hello")
 
     # This will only run following errors raised by !hello
     @hello.error
     async def hello_on_error(error: Exception):
         """on-error in hello."""
-        print(f"Hello routine raised: {error}.")
+        logger.info(f"Hello routine raised: {error}.")
 
     # https://twitchio.readthedocs.io/en/latest/exts/routines.html
     # This routine will run at the same time everyday. If a naive datetime is
@@ -61,12 +61,7 @@ class Cog(commands.Cog):
     )
     async def happy_birthday(arg: str):
         """happy_birthday."""
-        print(f"Hello {arg}!")
+        logger.info(f"Hello {arg}!")
 
     # Shout out your discord or other social media
     # @routines.routine(hours=1)
-
-
-def prepare(bot: commands.Bot, data={}):
-    """Load our cog with this module."""
-    bot.add_cog(Cog(bot, data=data))

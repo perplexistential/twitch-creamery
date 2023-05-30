@@ -1,15 +1,17 @@
 # Copyright Alex Morais (thatsamorais@gmail.com) for perplexistential
 """This echo_console Cog is a simple bot."""
 
+from bots.bot import Bot
 from twitchio.ext import commands
+from .base import BaseCog
+import logging
 
+logger = logging.getLogger(__name__)
 
-class Cog(commands.Cog):
-    """Cog."""
+class Cog(BaseCog):
 
-    def __init__(self, bot, data={}):
-        """init."""
-        self.bot = bot
+    def __init__(self, bot: Bot, data={}):
+        super().__init__(bot, 'echo_console', **data)
 
     @commands.command()
     async def hello(self, ctx: commands.Context):
@@ -19,14 +21,9 @@ class Cog(commands.Cog):
     @commands.Cog.event()
     async def event_message(self, message):
         """Event inside a cog."""
-        print(message.content)
+        logger.info(message.content)
 
     @commands.Cog.event("event_ready")
     async def is_ready(self):
         """is_ready."""
-        print("echo_console cog is ready!")
-
-
-def prepare(bot: commands.Bot, data={}):
-    """Load our cog with this module."""
-    bot.add_cog(Cog(bot, data=data))
+        logger.info("echo_console cog is ready!")
