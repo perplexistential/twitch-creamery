@@ -6,3 +6,4 @@ datetime
 python-dotenv
 cryptography
 httpx
+pyinstaller==5.12.0
