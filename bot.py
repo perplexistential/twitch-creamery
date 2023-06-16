@@ -7,7 +7,7 @@ import logging
 import yaml
 import asyncio
 from dotenv import dotenv_values
-iimport argparse
+import argparse
 
 from bots.bot import Bot
 
@@ -41,9 +41,13 @@ if __name__ == "__main__":
     # Load environment configuration
     env_config = dotenv_values(".env")
 
-    # Load bots configuration
-    with open(args.config, "r") as file:
-        bots_config = yaml.safe_load(file)["bots"]
+    try:
+        # Load bots configuration
+        with open(args.config, "r") as file:
+            bots_config = yaml.safe_load(file)["bots"]
+    except FileNotFoundError:
+        print(f"Configuration file not found: {config_filename}")
+        sys.exit(1)
 
     # Setup bots using the loaded configurations
     bots = setup_bots(env_config, bots_config)
