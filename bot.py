@@ -46,7 +46,7 @@ if __name__ == "__main__":
         with open(args.config, "r") as file:
             bots_config = yaml.safe_load(file)["bots"]
     except FileNotFoundError:
-        print(f"Configuration file not found: {config_filename}")
+        print(f"Configuration file not found: {args.config}")
         sys.exit(1)
 
     # Setup bots using the loaded configurations
