@@ -24,6 +24,15 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+    - name: Create dummy bots.yaml
+      run: |
+        echo 'bots:' > bots.yaml
+        echo '  bot1:' >> bots.yaml
+        echo '    token: dummy_token' >> bots.yaml
+        echo '    client_id: dummy_client_id' >> bots.yaml
+        echo '    client_secret: dummy_client_secret' >> bots.yaml
+        echo '    initial_channels: [dummy_channel]' >> bots.yaml
+
     - name: Run Python script
       run: |
         python bot.py
