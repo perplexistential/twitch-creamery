@@ -19,7 +19,7 @@ PUBSUB_BOT_NAME = os.getenv("PUBSUB_BOT_NAME", "pubsub")
 
 def setup_bots(env_config, bots_config):
     bot_list = []
-    for bot_name, bot_config in bots_config.items():
+    for bot_name, bot_config in (bots_config or {}).items():
         print(f"Bot config for {bot_name}: {bot_config}")
         bot = Bot(bot_name, env_config, bot_config)
         bot_list.append(bot)
