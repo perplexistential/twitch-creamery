@@ -7,6 +7,7 @@ import logging
 import yaml
 import asyncio
 from dotenv import dotenv_values
+iimport argparse
 
 from bots.bot import Bot
 
@@ -24,17 +25,24 @@ def setup_bots(env_config, bots_config):
     return bot_list
 
 
-async def run_bots(bot_list):
-    tasks = [asyncio.create_task(bot.run()) for bot in bot_list]
+async def run_bots(bots):
+    tasks = []
+    for bot in bots:
+        tasks.append(bot.run())
+        await asyncio.sleep(1)  # Sleep for 1 second between starting each bot
     await asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", help="The path to bots.yaml configuration file", default="bots.yaml")
+    args = parser.parse_args()
+
     # Load environment configuration
     env_config = dotenv_values(".env")
 
     # Load bots configuration
-    with open(env_config.get("CONFIG_FILENAME", "bots.yaml"), "r") as file:
+    with open(args.config, "r") as file:
         bots_config = yaml.safe_load(file)["bots"]
 
     # Setup bots using the loaded configurations
