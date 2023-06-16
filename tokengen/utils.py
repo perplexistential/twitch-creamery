@@ -2,6 +2,9 @@
 
 import threading
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 from oauth import user
 
@@ -51,7 +54,7 @@ def refresh_token(client_id, client_secret):
     global __token_cache
     if not client_id or not client_secret:
         if os.environ.get("AUTH_TOKEN", None):
-            print(
+            logging.info(
                 "Your manual auth token may have expired. "
                 "Providing a client id/secret and acquiring a token from the "
                 "OAuth2 Authorization flow with a user would enable automatic "

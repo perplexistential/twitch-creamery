@@ -1,0 +1,9 @@
+twitchio==2.1.5
+pyyaml
+pre-commit
+requests
+datetime
+python-dotenv
+cryptography
+httpx
+pyinstaller==5.12.0

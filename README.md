@@ -24,10 +24,59 @@ The rest is merely facilitating what is in cogs.
 ## code
 
 1. Python 3.x(3.6+): https://www.python.org/downloads/
-1. Open a shell on your system: bash, iterm, cmd.exe
-1. run `pip install pipenv`
-1. change directory to where this project resides: cd ~/your/project/path, or even cd C:\your\project\path
-1. now execute `pipenv sync` to sync your local env with the dependencies of this project
+
+This project now uses pip-tools for dependency management, specifically pip-compile. Below are the steps for setting up the environment and installing dependencies.
+
+1. Install virtualenv
+
+Before you begin, make sure you have Python and pip (Python's package installer) installed on your computer. Then you can install virtualenv via pip:
+
+```bash
+pip install virtualenv
+```
+
+2. Create a virtual environment
+
+Navigate to the directory of your project and create a new virtual environment named "venv". You can do this by running the following command:
+
+```bash
+virtualenv venv
+```
+
+3. Activate the virtual environment
+
+Activate the virtual environment. This step depends on your operating system.
+
+    On macOS and Linux:
+
+```bash
+source venv/bin/activate
+```
+
+    On Windows:
+
+```cmd
+    venv\Scripts\activate
+```
+
+4. Install pip-tools
+
+After activating the virtual environment, install pip-tools:
+
+```bash
+pip install pip-tools
+```
+
+5. Install the project dependencies
+
+Finally, you can install the project dependencies using pip-compile:
+
+```bash
+pip-compile requirements.in
+pip install -r requirements.txt
+```
+
+You have now successfully set up your virtual environment and installed the project dependencies.
 
 ## env file
 
@@ -46,7 +95,7 @@ YOUR_BOT_NAME_CLIENT_SECRET= ...
 
 ```shell
  > cd path\to\code\directory
- path\to\code\directory\> pipenv run python bot.py
+ path\to\code\directory\> python bot.py
 ```
 
 ### default values

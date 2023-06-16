@@ -11,28 +11,30 @@
 
 """Cog composes bot features."""
 
-import os
+import logging
 from bots.bot import Bot
 from twitchio.ext import commands, eventsub
+from .base_cog import BaseCog
 
+logger = logging.getLogger(__name__)
 
-class Cog(commands.Cog):
-    """Cog."""
+class Cog(BaseCog):
 
     def __init__(self, bot: Bot, data={}):
-        """init."""
-        self.bot = bot
-        self.data = data
+        super().__init__(bot, 'eventsub', **data)
         self.eventsub_client = eventsub.EventSubClient(
             self.bot,
-            os.environ.get("EVENTSUB_SECRET_WORD", "some_secret_string"),
-            os.environ.get("EVENTSUB_CALLBACK", "/callback"),
+            self.EVENTSUB_SECRET_WORD,
+            self.EVENTSUB_CALLBACK,
         )
+
+    def load_config(self):
+        self.EVENTSUB_SECRET_WORD = self.data.get('EVENTSUB_SECRET_WORD', 'some_secret_string')
+        self.EVENTSUB_CALLBACK = self.data.get('EVENTSUB_CALLBACK', '/callback')
 
     @commands.Cog.event("event_ready")
     async def is_ready(self):
-        """Run when ready."""
-        print("eventsub cog is ready!")
+        logging.info("eventsub cog is ready!")
         bot = self.bot
         for channel in bot.channels:
             for event in self.data.get("events", []):
@@ -93,7 +95,7 @@ class Cog(commands.Cog):
                         channel
                     )
         port = self.data.get("port", "15543")
-        print(f"eventsub listening on port {port}")
+        logging.info(f"eventsub listening on port {port}")
         self.bot.loop.create_task(self.eventsub_client.listen(port=port))
 
         @bot.event()
@@ -199,8 +201,3 @@ class Cog(commands.Cog):
             payload: eventsub.CustomRewardRedemptionAddUpdateData,
         ):
             pass
-
-
-def prepare(bot: commands.Bot, data={}):
-    """Load our cog with this module."""
-    bot.add_cog(Cog(bot, data=data))
